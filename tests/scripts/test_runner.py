@@ -32,3 +32,12 @@ class DdtraceRunTest(unittest.TestCase):
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_enabled.py']
         )
         assert out.startswith("Test success")
+
+    def test_patched_modules(self):
+        pass
+
+    def test_integration(self):
+        out = subprocess.check_output(
+            ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_integration.py']
+        )
+        assert out.startswith("Test success")

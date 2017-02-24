@@ -1,9 +1,9 @@
-from __future__ import print_function
-
 """
 Bootstrapping code that is run when using the `ddtrace-run` Python entrypoint
 Add all monkey-patching that needs to run by default here
 """
+from __future__ import print_function
+
 import os
 
 try:
