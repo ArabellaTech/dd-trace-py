@@ -6,5 +6,5 @@ from ddtrace import tracer
 from nose.tools import eq_
 
 if __name__ == '__main__':
-    eq_(os.environ['DATADOG_SERVICE_NAME'], 'my_test_service')
+    eq_(os.environ['DATADOG_SERVICE_NAME'], 'python')
     print("Test success")

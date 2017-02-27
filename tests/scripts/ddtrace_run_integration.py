@@ -8,11 +8,50 @@ from __future__ import print_function
 import redis
 import os
 
-from tests.test_tracer import DummyWriter
 from tests.contrib.config import REDIS_CONFIG
 from ddtrace import Pin
+from ddtrace.encoding import JSONEncoder, MsgpackEncoder
+from ddtrace.writer import AgentWriter
 
 from nose.tools import eq_, ok_
+
+class DummyWriter(AgentWriter):
+    """ DummyWriter is a small fake writer used for tests. not thread-safe. """
+
+    def __init__(self):
+        # original call
+        super(DummyWriter, self).__init__()
+        # dummy components
+        self.spans = []
+        self.services = {}
+        self.json_encoder = JSONEncoder()
+        self.msgpack_encoder = MsgpackEncoder()
+
+    def write(self, spans=None, services=None):
+        if spans:
+            # the traces encoding expect a list of traces so we
+            # put spans in a list like we do in the real execution path
+            # with both encoders
+            self.json_encoder.encode_traces([spans])
+            self.msgpack_encoder.encode_traces([spans])
+            self.spans += spans
+
+        if services:
+            self.json_encoder.encode_services(services)
+            self.msgpack_encoder.encode_services(services)
+            self.services.update(services)
+
+    def pop(self):
+        # dummy method
+        s = self.spans
+        self.spans = []
+        return s
+
+    def pop_services(self):
+        # dummy method
+        s = self.services
+        self.services = {}
+        return s
 
 if __name__ == '__main__':
     r = redis.Redis(port=REDIS_CONFIG['port'])

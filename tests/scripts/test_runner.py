@@ -7,13 +7,38 @@ import unittest
 
 
 class DdtraceRunTest(unittest.TestCase):
+    def tearDown(self):
+        """
+        Clear DATADOG_* env vars between tests
+        """
+        for k in ('DATADOG_ENV', 'DATADOG_TRACE_ENABLED', 'DATADOG_SERVICE_NAME'):
+            if k in os.environ:
+                del os.environ[k]
+
     def test_service_name_default(self):
+        """
+        In the absence of $DATADOG_SERVICE_NAME, use a default service derived from command-line
+        """
+        out = subprocess.check_output(
+            ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_service_default.py']
+        )
+        assert out.startswith("Test success")
+
+    def test_service_name_passthrough(self):
+        """
+        When $DATADOG_SERVICE_NAME is present don't override with a default
+        """
+        os.environ["DATADOG_SERVICE_NAME"] = "my_test_service"
+
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_service.py']
         )
         assert out.startswith("Test success")
 
     def test_env_name_passthrough(self):
+        """
+        $DATADOG_ENV gets passed through to the global tracer as an 'env' tag
+        """
         os.environ["DATADOG_ENV"] = "test"
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_env.py']
@@ -21,6 +46,9 @@ class DdtraceRunTest(unittest.TestCase):
         assert out.startswith("Test success")
 
     def test_env_enabling(self):
+        """
+        DATADOG_TRACE_ENABLED=false allows disabling of the global tracer
+        """
         os.environ["DATADOG_TRACE_ENABLED"] = "false"
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_disabled.py']
@@ -34,7 +62,13 @@ class DdtraceRunTest(unittest.TestCase):
         assert out.startswith("Test success")
 
     def test_patched_modules(self):
-        pass
+        """
+        Using `ddtrace-run` registers some generic patched modules
+        """
+        out = subprocess.check_output(
+            ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_patched_modules.py']
+        )
+        assert out.startswith("Test success")
 
     def test_integration(self):
         out = subprocess.check_output(

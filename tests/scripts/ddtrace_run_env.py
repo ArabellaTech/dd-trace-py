@@ -1,8 +1,10 @@
 from __future__ import print_function
 
-from ddtrace import tracer
 import os
+from ddtrace import tracer
+
+from nose.tools import eq_
 
 if __name__ == '__main__':
-    assert tracer.tags["env"] == "test"
+    eq_(tracer.tags["env"], "test")
     print("Test success")
