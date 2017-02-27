@@ -22,7 +22,7 @@ class DdtraceRunTest(unittest.TestCase):
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_service_default.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
     def test_service_name_passthrough(self):
         """
@@ -33,7 +33,7 @@ class DdtraceRunTest(unittest.TestCase):
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_service.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
     def test_env_name_passthrough(self):
         """
@@ -43,7 +43,7 @@ class DdtraceRunTest(unittest.TestCase):
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_env.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
     def test_env_enabling(self):
         """
@@ -53,13 +53,13 @@ class DdtraceRunTest(unittest.TestCase):
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_disabled.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
         os.environ["DATADOG_TRACE_ENABLED"] = "true"
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_enabled.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
     def test_patched_modules(self):
         """
@@ -68,10 +68,10 @@ class DdtraceRunTest(unittest.TestCase):
         out = subprocess.check_output(
             ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_patched_modules.py']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
 
     def test_integration(self):
         out = subprocess.check_output(
-            ['ddtrace-run', 'python', 'tests/scripts/ddtrace_run_integration.py']
+            ['ddtrace-run', 'python', '-m', 'tests.scripts.ddtrace_run_integration']
         )
-        assert out.startswith("Test success")
+        assert out.startswith(b"Test success")
